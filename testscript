@@ -1,7 +1,1 @@
-spawn(function()
-while wait(1) do
-	if _G.Huk then
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-113.60099029541016, 713.8285522460938, -2444.72998046875)
-	end
-	end
-	end)
+
