@@ -1,0 +1,283 @@
+
+-- // ESP
+
+function isnil(thing)
+        return (thing == nil)
+    end
+    local function round(n)
+        return math.floor(tonumber(n) + 0.5)
+    end
+    Number = math.random(1, 1000000)
+    function UpdateEspPlayer()
+        for i, v in pairs(game:GetService "Players":GetChildren()) do
+            pcall(
+                function()
+                    if not isnil(v.Character) then
+                        if ESPPlayer then
+                            if not isnil(v.Character.Head) and not v.Character.Head:FindFirstChild("NameEsp" .. Number) then
+                                local bill = Instance.new("BillboardGui", v.Character.Head)
+                                bill.Name = "NameEsp" .. Number
+                                bill.ExtentsOffset = Vector3.new(0, 1, 0)
+                                bill.Size = UDim2.new(1, 200, 1, 30)
+                                bill.Adornee = v.Character.Head
+                                bill.AlwaysOnTop = true
+                                local name = Instance.new("TextLabel", bill)
+                                name.Font = "GothamBold"
+                                name.FontSize = "Size14"
+                                name.TextWrapped = true
+                                name.Text =
+                                    (v.Name ..
+                                    " \n" ..
+                                        round(
+                                            (game:GetService("Players").LocalPlayer.Character.Head.Position -
+                                                v.Character.Head.Position).Magnitude / 3
+                                        ) ..
+                                            " M")
+                                name.Size = UDim2.new(1, 0, 1, 0)
+                                name.TextYAlignment = "Top"
+                                name.BackgroundTransparency = 1
+                                name.TextStrokeTransparency = 0.5
+                                if v.Team == game.Players.LocalPlayer.Team then
+                                    name.TextColor3 = Color3.new(0, 255, 0)
+                                else
+                                    name.TextColor3 = Color3.new(255, 0, 0)
+                                end
+                            else
+                                v.Character.Head["NameEsp" .. Number].TextLabel.Text =
+                                    (v.Name ..
+                                    " | " ..
+                                        round(
+                                            (game:GetService("Players").LocalPlayer.Character.Head.Position -
+                                                v.Character.Head.Position).Magnitude / 3
+                                        ) ..
+                                            " M\nHealth : " ..
+                                                round(
+                                                    v.Character.Humanoid.Health * 100 / v.Character.Humanoid.MaxHealth
+                                                ) ..
+                                                    "%")
+                            end
+                        else
+                            if v.Character.Head:FindFirstChild("NameEsp" .. Number) then
+                                v.Character.Head:FindFirstChild("NameEsp" .. Number):Destroy()
+                            end
+                        end
+                    end
+                end
+            )
+        end
+    end
+
+-- /// UI
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "KaGa HUB",
+    SubTitle = "",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "rbxassetid://10709752254" }),
+    plr = Window:AddTab({ Title = "Players", Icon = "rbxassetid://10709769598" }),
+    it = Window:AddTab({ Title = "Auto click items", Icon = "rbxassetid://10709781460" }),
+    raid = Window:AddTab({ Title = "Raid", Icon = "" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+    
+}
+
+local Options = Fluent.Options
+
+do
+    Fluent:Notify({
+        Title = "Notification",
+        Content = "This is a notification",
+        SubContent = "SubContent",
+        Duration = 5
+    })
+
+
+
+    Tabs.Main:AddParagraph({
+        Title = "Welcome Bro !",
+        Content = "THIS IS MY NEW UI !"
+    })
+
+end
+
+    
+-- /// PLAYER
+
+local Toggle = Tabs.plr:AddToggle("Esp Player", {Title = "Esp", Default = false })
+
+    Toggle:OnChanged(function(esp)
+    ESPPlayer = esp
+                while ESPPlayer do
+                    wait()
+                    UpdateEspPlayer()
+                end
+    end)
+    
+    
+    Plr = {}
+    for i, players in pairs(game.Players:GetChildren()) do
+        if players.Name ~= game.Players.LocalPlayer.Name then
+            table.insert(Plr, players.Name)
+        end
+    end
+    
+    
+local Dropdown = Tabs.plr:AddDropdown("Players", {
+        Title = "Select Player",
+        Values = Plr,
+        Multi = false,
+        Default = nil,
+    })
+    
+local drop = Dropdown:OnChanged(function(Value)
+        SPlayer = Value
+    end)
+    
+
+Tabs.plr:AddButton({
+        Title = "Refresh Player",
+        Description = "Refresh Plr",
+        Callback = function()
+            
+        end
+    })
+
+
+
+
+Tabs.plr:AddButton({
+        Title = "Teleport to player",
+        Description = "tp",
+        Callback = function()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                    game.Players[SPlayer].Character.HumanoidRootPart.CFrame
+        end
+    })
+
+
+local Toggle = Tabs.plr:AddToggle("", {Title = "loop tp", Default = false })
+Toggle:OnChanged(function(Va)
+Tptoplayers = Va
+                while Tptoplayers do
+                    wait()
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                        game.Players[SPlayer].Character.HumanoidRootPart.CFrame
+                end
+    end)
+
+
+
+
+-- // items function
+
+
+
+local Toggle = Tabs.it:AddToggle("", {Title = "Click beli", Default = false })
+
+    Toggle:OnChanged(function(Beli)
+        _G.beli = Beli
+  game:GetService("RunService").Stepped:Connect(function()
+ pcall(function()
+ if _G.beli then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(12.665019035339355, 6.968150615692139, 15.83401870727539)
+fireproximityprompt(workspace:GetChildren()[18].Model.Coin.ProximityPrompt, 1, true)
+end
+end)
+end)
+    end)
+    
+    
+    local Toggle = Tabs.it:AddToggle("", {Title = "Click Yoru", Default = false })
+
+    Toggle:OnChanged(function(Yoru)
+        _G.yoru = Yoru
+  game:GetService("RunService").Stepped:Connect(function()
+ pcall(function()
+ if _G.yoru then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-179.4557647705078, 21.313762664794922, -835.816162109375)
+fireproximityprompt(workspace.ClickPoint.YoruClick.ProximityPrompt, 1, true)
+end
+end)
+end)
+    end)
+    
+    
+    local Toggle = Tabs.it:AddToggle("", {Title = "Dark orb", Default = false })
+
+    Toggle:OnChanged(function(da)
+        _G.Dark = da 
+        game:GetService("RunService").Stepped:Connect(function()
+        pcall(function()
+        if _G.Dark then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1121.6292724609375, 43.66426086425781, -124.10894775390625)
+        fireproximityprompt(workspace.ClickPoint["ClickDark Orb"].ProximityPrompt, 1, true)
+        end
+        end)
+        end)
+        
+    end)
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- /// settings
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+
+
+SaveManager:IgnoreThemeSettings()
+
+
+SaveManager:SetIgnoreIndexes({})
+
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+
+
+Window:SelectTab(1)
+
+Fluent:Notify({
+    Title = "Fluent",
+    Content = "The script has been loaded.",
+    Duration = 8
+})
+
+SaveManager:LoadAutoloadConfig()
